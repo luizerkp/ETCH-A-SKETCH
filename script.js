@@ -7,17 +7,31 @@ footer.appendChild(footerPara);
 
 
 
-// grid of 64 x 64 squares default
-const gridDefaultSize = 64;
-
-
 window.onload = function () {
-    buildGrid();
-    
+    buildGrid();  
 };
 
+const defaultColor = "#000000" 
+let color = document.querySelector("#color-picker");
+color.addEventListener('change', (e) => {
+    color = e.target.value;
+    setColor(color);
+    });
+
+const defaultGridSize = 32;
+let gridSize = document.querySelector('#brush-size');
+// console.log(gridSize);
+gridSize.addEventListener('change', (e) => {
+    gridSize = e.target.value;
+    buildGrid(gridSize);
+    });
+
+let mouseDown = false
+document.body.onmousedown = () => (mouseDown = true)
+document.body.onmouseup = () => (mouseDown = false)
+
 // function to build the grid
-function buildGrid(gridSize = gridDefaultSize) {
+function buildGrid(gridSize=defaultGridSize) {
 
     const gridContainer = document.querySelector('.grid-container');
     gridContainer.style.cssText = `grid-template-columns: repeat(${gridSize}, 1fr); grid-template-rows: repeat(${gridSize}, 1fr);`;
@@ -27,90 +41,90 @@ function buildGrid(gridSize = gridDefaultSize) {
     for (let i = 0; i < Math.pow(gridSize, 2); i++) {
         gridContainer.appendChild(gridItem.cloneNode(true));
     }
-    
-    setRandomColor();
+
+    setColor(color); 
 }
 
 // resets colors on grid without removing/resizing grid
 function resetGridColor() {    
-    const rgbRed = 255;
-    const rgbGreen =255;
-    const rgbBlue = 255;
     const gridItemsAll = document.querySelectorAll('.grid-item');
     gridItemsAll.forEach(gridItem => {
-        gridItem.style.cssText = `background-color: rgb(${rgbRed}, ${rgbGreen}, ${rgbBlue})`;
+        gridItem.style.cssText = `background-color: ${defaultColor}`;
     });
 }
-
-// change grid size
-const clear = document.querySelector('#reset');
-clear.addEventListener('click', clearGrid);
 
 // grid but keep size
-const reset = document.querySelector('#clear');
-reset.addEventListener('click', resetGridColor);
+const clear = document.querySelector('#clear');
+clear.addEventListener('click', resetGridColor);
 
 
-// function to change grid size
-function clearGrid() {
+// // function to change grid size
+// function clearGrid() {
 
-    const gridContainer = document.querySelector('.grid-container');
-    const gridItemsAll = document.querySelectorAll('.grid-item');
+//     const gridContainer = document.querySelector('.grid-container');
+//     const gridItemsAll = document.querySelectorAll('.grid-item');
 
-    gridItemsAll.forEach(gridItem => {
-        gridContainer.removeChild(gridItem);
-    });
+//     gridItemsAll.forEach(gridItem => {
+//         gridContainer.removeChild(gridItem);
+//     });
   
-    let newGridSize = 0;
-    let atempts = 0;
+//     let newGridSize = 0;
+//     let atempts = 0;
 
-    do {
-        if (atempts > 0) {
-            newGridSize = prompt('Please enter a valid whole number between 1 and 100');
-        }
-        newGridSize = prompt('Enter a new grid size? (Max:100)');
-        atempts++;
-    }
-    while (!validateNumber(newGridSize));
+//     do {
+//         if (atempts > 0) {
+//             newGridSize = prompt('Please enter a valid whole number between 1 and 100');
+//         }
+//         newGridSize = prompt('Enter a new grid size? (Max:100)');
+//         atempts++;
+//     }
+//     while (!validateNumber(newGridSize));
 
-    return buildGrid(newGridSize);
-}
+//     return buildGrid(newGridSize);
+// }
 
 // valdates user input for grid size
-function validateNumber(number) {
-    // check if number is a whole number by converting to str 
-    if (number.toString().trim().match(/^(100|[1-9][0-9])?$/) !== null) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+// function validateNumber(number) {
+//     // check if number is a whole number by converting to str 
+//     if (number.toString().trim().match(/^(100|[1-9][0-9])?$/) !== null) {
+//         return true;
+//     }
+//     else {
+//         return false;
+//     }
+// }
 
 // set random color on grid square on mouse enter event with shift key pressed down
-function setRandomColor() {
+
+// set random color on grid square on mouse enter event with shift key pressed down
+function setColor(color=defaultColor) {
 
     const gridItemsAll = document.querySelectorAll('.grid-item');
-    let rgbRed = 255;
-    let rgbGreen =255;
-    let rgbBlue = 255;
 
     gridItemsAll.forEach(gridItem => {
-        gridItem.addEventListener('mouseenter', function (e) {
-            if(e.shiftKey) {
+        gridItem.addEventListener('mouseover', function () {
+            if(mouseDown===true) {
                 if(!gridItem.getAttribute('id')) {
                     gridItem.setAttribute('id', 'grid-item-hover');
-                    rgbRed = Math.floor(Math.random() * 256);
-                    rgbGreen = Math.floor(Math.random() * 256);
-                    rgbBlue = Math.floor(Math.random() * 256);
-                    gridItem.style.cssText = `background-color: rgb(${rgbRed}, ${rgbGreen}, ${rgbBlue})`;
-                } else {
-                    makeDarker(gridItem);
+                    gridItem.style.cssText = `background-color: ${color.value}`;
                 }
             } 
         });
     });
 }
+// function setColor(color=defaultColor) {
+
+//     const gridItemsAll = document.querySelectorAll('.grid-item');
+//     console.log(gridItemsAll);
+
+//     gridItemsAll.forEach(gridItem => {
+//         gridItem.addEventListener('mouseover', function () {
+//             if(mouseDown) {
+//                 gridItem.style.cssText = `background-color: ${color}`;
+//             } 
+//         });
+//     });
+// }
 
 // makes grid square darker by 10%
 function makeDarker(gridItem) {
