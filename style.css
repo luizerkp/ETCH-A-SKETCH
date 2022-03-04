@@ -10,8 +10,6 @@ body {
 .grid-container {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(16, 1fr);
-    grid-template-rows: repeat(16, 1fr);
 }
 
 /* Sticky Footer */
@@ -23,6 +21,27 @@ body {
     background: #1F2937;
     justify-content: center;
     align-items: baseline;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #1F2937;
+}
+#instructions {
+    font-size: 1rem;
+    font-weight: bold;
+    color: red;
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
+
+.grid-container {
+    border: 10px solid #1F2937;
 }
 
 button {
@@ -39,7 +58,4 @@ button {
 }
 .grid-item {
    background-color: rgb(255, 255, 255);
-}
-.grid-item:hover {
-    background-color: #1b1b1a;
 }
