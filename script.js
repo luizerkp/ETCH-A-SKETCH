@@ -80,6 +80,7 @@ function clearGrid(newGridSize) {
 
     buildGrid(newGridSize);
     resetGridColor(canvasColor);
+    setBrushColor(brushColor.value);
 }
 
 // resets colors on grid without removing/resizing grid
