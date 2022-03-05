@@ -37,21 +37,28 @@ body {
     justify-content: space-between;
     background-color: #1F2937;
 }
-/* #instructions {
-    font-size: 1rem;
+#canvas-color-picker, #brush-color-picker {
+    border: none;
+    width: 6em;
+    box-sizing: content-box;
+    height: 35px;
+}
+#eraser, #clear {
+    font-family: cursive;
     font-weight: bold;
-    color: red;
-    animation: blinker 1s linear infinite;
 }
 
-@keyframes blinker {
-    50% {
-      opacity: 0;
-    }
-  } */
+.active {
+    color: #b8772d;
+}
+
+.grid-item{
+    border: #9c9ea0 solid 1px;
+}
 
 .grid-container {
     border: 10px solid #1F2937;
+    cursor: cell;
 }
 
 button {
@@ -60,12 +67,9 @@ button {
     padding: 8 16px;
     margin: 16px;
     border: none;
-    font-size: 30px;
+    font-size: 1.5em;
     font-weight: bolder;
     color: #F9FAF8;
     border-radius: 4px;
     text-align: center;
-}
-.grid-item {
-   background-color: #ffffff
 }

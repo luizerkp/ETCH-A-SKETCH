@@ -5,138 +5,113 @@ let date = new Date().getFullYear();
 footerPara.textContent = `Copyright © ${date} Luis Tamarez All Rights Reserved`;
 footer.appendChild(footerPara);
 
-
-
+// dafault state onload
 window.onload = function () {
-    buildGrid();  
+    buildGrid();
+    setBrushColor();
+    alert('Welcome to ETCH-A-SKETCH!\n Please Note that changing the canvas size will clear the current drawing\nEnjoy!');
 };
 
-const defaultColor = "#000000" 
-let color = document.querySelector("#color-picker");
-color.addEventListener('change', (e) => {
-    color = e.target.value;
-    setColor(color);
-    });
-
+// default values for grid size, canvas and brush color
+const defaultBrushColor = "#000000"
+const defaultCanvasColor = "#ffffff"
 const defaultGridSize = 32;
+
+// prevent dragging of grid items that will interfere with the user experience
+document.querySelector('body').ondragstart = function () { return false; };
+
+// event listeners for grid size input, canvas color input and brush color input
+let brushColor = document.querySelector("#brush-color-picker");
+brushColor.addEventListener('change', (e) => {
+    brushColor = e.target.value;
+    setBrushColor(brushColor);
+});
+
+let canvasColor = document.querySelector("#canvas-color-picker");
+canvasColor.addEventListener('change', (e) => {
+    canvasColor = e.target.value;
+    resetGridColor(canvasColor);
+});
+
 let gridSize = document.querySelector('#brush-size');
-// console.log(gridSize);
 gridSize.addEventListener('change', (e) => {
     gridSize = e.target.value;
-    buildGrid(gridSize);
-    });
+    clearGrid(gridSize);
+});
 
-let mouseDown = false
-document.body.onmousedown = () => (mouseDown = true)
-document.body.onmouseup = () => (mouseDown = false)
+// Clear grid but keep canvas color
+const clear = document.querySelector('#clear');
+clear.addEventListener('click', () => {
+    resetGridColor(canvasColor);
+});
+
+// call erase function on click and toggle eraser active class
+let eraserOn = false;
+const eraser = document.querySelector('#eraser');
+eraser.addEventListener('click', () => {
+    eraser.classList.toggle('active');
+    eraserOn = erase(eraserOn);
+});
 
 // function to build the grid
-function buildGrid(gridSize=defaultGridSize) {
-
+function buildGrid(gridSize = defaultGridSize) {
     const gridContainer = document.querySelector('.grid-container');
     gridContainer.style.cssText = `grid-template-columns: repeat(${gridSize}, 1fr); grid-template-rows: repeat(${gridSize}, 1fr);`;
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
+    gridItem.setAttribute('draggable', 'false');
 
-    for (let i = 0; i < Math.pow(gridSize, 2); i++) {
+    let gridArea = gridSize * gridSize;
+
+    for (let i = 0; i < gridArea; i++) {
         gridContainer.appendChild(gridItem.cloneNode(true));
     }
 
-    setColor(color); 
+    setBrushColor(brushColor);
+}
+// // function to change grid size
+function clearGrid(newGridSize) {
+    const gridContainer = document.querySelector('.grid-container');
+    const gridItemsAll = document.querySelectorAll('.grid-item');
+
+    gridItemsAll.forEach(gridItem => {
+        gridContainer.removeChild(gridItem);
+    });
+
+    buildGrid(newGridSize);
+    resetGridColor(canvasColor);
 }
 
 // resets colors on grid without removing/resizing grid
-function resetGridColor() {    
+function resetGridColor(canvasColor = defaultCanvasColor) {
     const gridItemsAll = document.querySelectorAll('.grid-item');
     gridItemsAll.forEach(gridItem => {
-        gridItem.style.cssText = `background-color: ${defaultColor}`;
+        gridItem.style.cssText = `background-color: ${canvasColor}`;
     });
 }
 
-// grid but keep size
-const clear = document.querySelector('#clear');
-clear.addEventListener('click', resetGridColor);
-
-
-// // function to change grid size
-// function clearGrid() {
-
-//     const gridContainer = document.querySelector('.grid-container');
-//     const gridItemsAll = document.querySelectorAll('.grid-item');
-
-//     gridItemsAll.forEach(gridItem => {
-//         gridContainer.removeChild(gridItem);
-//     });
-  
-//     let newGridSize = 0;
-//     let atempts = 0;
-
-//     do {
-//         if (atempts > 0) {
-//             newGridSize = prompt('Please enter a valid whole number between 1 and 100');
-//         }
-//         newGridSize = prompt('Enter a new grid size? (Max:100)');
-//         atempts++;
-//     }
-//     while (!validateNumber(newGridSize));
-
-//     return buildGrid(newGridSize);
-// }
-
-// valdates user input for grid size
-// function validateNumber(number) {
-//     // check if number is a whole number by converting to str 
-//     if (number.toString().trim().match(/^(100|[1-9][0-9])?$/) !== null) {
-//         return true;
-//     }
-//     else {
-//         return false;
-//     }
-// }
-
-// set random color on grid square on mouse enter event with shift key pressed down
-
-// set random color on grid square on mouse enter event with shift key pressed down
-function setColor(color=defaultColor) {
-
+// function to set brush color when drawing
+function setBrushColor(brushColor = defaultBrushColor) {
     const gridItemsAll = document.querySelectorAll('.grid-item');
 
     gridItemsAll.forEach(gridItem => {
-        gridItem.addEventListener('mouseover', function () {
-            if(mouseDown===true) {
-                if(!gridItem.getAttribute('id')) {
-                    gridItem.setAttribute('id', 'grid-item-hover');
-                    gridItem.style.cssText = `background-color: ${color.value}`;
-                }
-            } 
+        gridItem.addEventListener('mousemove', function (e) {
+            if (e.buttons > 0) {
+                gridItem.style.cssText = `background-color: ${brushColor}`;
+            }
         });
     });
 }
-// function setColor(color=defaultColor) {
 
-//     const gridItemsAll = document.querySelectorAll('.grid-item');
-//     console.log(gridItemsAll);
+// function to erase grid squares
+function erase(eraseColor) {
 
-//     gridItemsAll.forEach(gridItem => {
-//         gridItem.addEventListener('mouseover', function () {
-//             if(mouseDown) {
-//                 gridItem.style.cssText = `background-color: ${color}`;
-//             } 
-//         });
-//     });
-// }
-
-// makes grid square darker by 10%
-function makeDarker(gridItem) {
-
-    // get current RGB values
-    const rgbRed = gridItem.style.backgroundColor.substring(4, gridItem.style.backgroundColor.indexOf(','));
-    const rgbGreen = gridItem.style.backgroundColor.substring(gridItem.style.backgroundColor.indexOf(',') + 1, gridItem.style.backgroundColor.lastIndexOf(','));
-    const rgbBlue = gridItem.style.backgroundColor.substring(gridItem.style.backgroundColor.lastIndexOf(',') + 1, gridItem.style.backgroundColor.length - 1);
-
-    let newRgbRed = Math.floor(rgbRed * 0.9);
-    let newRgbGreen = Math.floor(rgbGreen * 0.9);
-    let newRgbBlue = Math.floor(rgbBlue * 0.9);
-
-    gridItem.style.cssText = `background-color: rgb(${newRgbRed}, ${newRgbGreen}, ${newRgbBlue})`;
+    if (!eraseColor) {
+        eraseColor = true;
+        setBrushColor(canvasColor);
+    } else {
+        eraseColor = false;
+        setBrushColor(brushColor.value);
+    }
+    return eraseColor;
 }
