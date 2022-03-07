@@ -69,7 +69,8 @@ function buildGrid(gridSize = defaultGridSize) {
 
     setBrushColor(brushColor);
 }
-// // function to change grid size
+
+// function to change grid size
 function clearGrid(newGridSize) {
     const gridContainer = document.querySelector('.grid-container');
     const gridItemsAll = document.querySelectorAll('.grid-item');
